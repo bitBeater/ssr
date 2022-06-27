@@ -9,10 +9,10 @@ interface Operator<T> {
 
 export type FindOperator<Property> = { not?: boolean } & RequireExactlyOne<Operator<Property>>;
 
-export type FindOptionsWhereProperty<Property> = Property extends Promise<infer I>
-	? FindOptionsWhereProperty<NonNullable<I>>
+export type Where<Property> = Property extends Promise<infer I>
+	? Where<NonNullable<I>>
 	: Property extends Array<infer I>
-	? FindOptionsWhereProperty<NonNullable<I>>
+	? Where<NonNullable<I>>
 	: Property extends Function
 	? never
 	: Property extends Date
@@ -22,5 +22,5 @@ export type FindOptionsWhereProperty<Property> = Property extends Promise<infer 
 	: Property | FindOperator<Property> | Property[];
 
 export type Search<Entity> = {
-	[P in keyof Entity]?: FindOptionsWhereProperty<NonNullable<Entity[P]>>;
+	[P in keyof Entity]?: Where<NonNullable<Entity[P]>>;
 };
