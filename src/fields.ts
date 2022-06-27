@@ -10,6 +10,8 @@ export type Field<Property> = Property extends Promise<infer I>
 	? Fields<Property> | boolean
 	: boolean;
 
-export type Fields<T> = {
-	[P in keyof T]?: Field<NonNullable<T[P]>>;
-};
+export type Fields<T> =
+	| {
+			[P in keyof T]?: Field<NonNullable<T[P]>>;
+	  }
+	| boolean;
