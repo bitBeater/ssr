@@ -1,7 +1,7 @@
 import { RequireExactlyOne } from 'type-fest';
 interface Operator<T> {
 	equal: T | T[];
-	like: T | T[];
+	like: T;
 	greater: T;
 	lesser: T;
 	between: { start: T; end: T };
