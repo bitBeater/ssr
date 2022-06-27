@@ -7,7 +7,7 @@ interface Operator<T> {
 	between: { start: T; end: T };
 }
 
-export type FindOperator<Property> = { not?: boolean } & RequireExactlyOne<Operator<Property>>;
+export type Find<Property> = { not?: boolean } & RequireExactlyOne<Operator<Property>>;
 
 export type Where<Property> = Property extends Promise<infer I>
 	? Where<NonNullable<I>>
@@ -16,10 +16,10 @@ export type Where<Property> = Property extends Promise<infer I>
 	: Property extends Function
 	? never
 	: Property extends Date
-	? Property | FindOperator<Property>
+	? Property | Find<Property>
 	: Property extends object
-	? Search<Property> | Search<Property>[] | FindOperator<any> | boolean
-	: Property | FindOperator<Property> | Property[];
+	? Search<Property> | Search<Property>[] | Find<any> | boolean
+	: Property | Find<Property> | Property[];
 
 export type Search<Entity> = {
 	[P in keyof Entity]?: Where<NonNullable<Entity[P]>>;
