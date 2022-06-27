@@ -1,3 +1,3 @@
-import { Schema } from 'type-fest';
+import { PartialDeep, Schema } from 'type-fest';
 
-export type Fields<T> = Schema<T, boolean>;
+export type Fields<T> = Schema<PartialDeep<T>, boolean>;
