@@ -18,7 +18,7 @@ export type Where<Property> = Property extends Promise<infer I>
 	: Property extends Date
 	? Property | Find<Property>
 	: Property extends object
-	? Search<Property> | Search<Property>[] | Find<any> | boolean
+	? Search<Property> | Search<Property>[]
 	: Property | Find<Property> | Property[];
 
 export type Search<Entity> = {
