@@ -10,7 +10,7 @@ export type OrderField<Property> = Property extends Promise<infer I>
 	? Property | OrderDirection
 	: Property extends object
 	? Order<Property> //| Search<Property>[]
-	: Property | OrderDirection | Property[];
+	: Property | OrderDirection;
 
 export type Order<T> = {
 	[P in keyof T]?: OrderField<NonNullable<T[P]>>;
