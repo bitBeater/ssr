@@ -1,11 +1,11 @@
 {
-	"name": "@alexrr2iggs/paginated-search",
+	"name": "@alexrr2iggs/ssr",
 	"version": "0.0.15",
 	"description": "",
 	"main": "dist/index.js",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/alexrr2iggs/paginated-search.git"
+		"url": "git+https://github.com/alexrr2iggs/ssr.git"
 	},
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
