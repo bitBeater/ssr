@@ -9,9 +9,10 @@ export interface SSR<T> {
     save(...e: T[]): Promise<T[]>;
     /**
      * perform a paginated and ordered search on entities
+     * if search is not provided, all entities are returned
      * @param search
      */
-    search(search: PaginatedSearch<T>): Promise<PaginatedResult<T>>;
+    search(search?: PaginatedSearch<T>): Promise<PaginatedResult<T>>;
     /**
      * delete entities matching the search parameters
      * @param search
