@@ -3,4 +3,5 @@ export * from './order';
 export * from './paginated-result';
 export * from './paginated-search';
 export * from './search-operators';
+export * from './ssr';
 //# sourceMappingURL=index.d.ts.map
