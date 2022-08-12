@@ -6,7 +6,7 @@ export interface SSR<T> {
      * create or update one or more entities
      * @param e
      */
-    save(...e: T[]): Promise<T[]>;
+    save(e: T[]): Promise<T[]>;
     /**
      * perform a paginated and ordered search on entities
      * if search is not provided, all entities are returned
