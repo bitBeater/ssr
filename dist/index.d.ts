@@ -3,5 +3,5 @@ export * from './order';
 export * from './paginated-result';
 export * from './paginated-search';
 export * from './search-operators';
-export * from './ssr';
+export * from './repository';
 //# sourceMappingURL=index.d.ts.map

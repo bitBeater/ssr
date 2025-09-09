@@ -1,11 +1,14 @@
 {
-	"name": "@alexrr2iggs/ssr",
-	"version": "0.0.3",
+	"name": "@bitbeater/ssr",
+	"version": "1.0.0",
 	"description": "",
 	"main": "dist/index.js",
+	"files": [
+		"dist"
+	],
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/alexrr2iggs/ssr.git"
+		"url": "git+https://github.com/bitBeater/ssr.git"
 	},
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"

@@ -1,4 +1,5 @@
 import { RequireExactlyOne } from 'type-fest';
+import { ScalarValue } from './misc';
 interface Operator<T> {
     equal: T | T[];
     like: T;
@@ -9,11 +10,11 @@ interface Operator<T> {
         end: T;
     };
 }
-export declare type Find<Property> = {
+export type Find<Property> = {
     not?: boolean;
 } & RequireExactlyOne<Operator<Property>>;
-export declare type Where<Property> = Property extends Promise<infer I> ? Where<NonNullable<I>> : Property extends Array<infer I> ? Where<NonNullable<I>> : Property extends Function ? never : Property extends Date ? Property | Find<Property> : Property extends object ? Search<Property> : Property | Find<Property> | Property[];
-export declare type Search<Entity> = {
+export type Where<FieldType> = FieldType extends ScalarValue ? Find<FieldType> | FieldType : FieldType extends Function ? never : FieldType extends Array<infer ArrayType> ? Where<ArrayType> : FieldType extends object ? Search<FieldType> : never;
+export type Search<Entity> = {
     [P in keyof Entity]?: Where<NonNullable<Entity[P]>>;
 };
 export {};

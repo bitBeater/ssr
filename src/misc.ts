@@ -1,0 +1,1 @@
+export type ScalarValue = string | number | boolean | Date | Promise<any>;
