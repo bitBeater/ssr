@@ -2,3 +2,5 @@ node_modules/
 src/test.ts
 .history/
 dist/
+.idea/
+.vscode/

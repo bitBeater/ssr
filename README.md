@@ -64,9 +64,7 @@ type Person = {
 Operator shape for scalar fields:
 - equal: T | T[]
 - like: T
-- greater: T
-- lesser: T
-- between: { start: T; end: T }
+- range: { greater: T; lesser: T }
 - not?: boolean (negate any of the above)
 
 You can pass either a raw scalar (shorthand for equal) or a Find<T> object with one operator. Nested objects and arrays are supported recursively.
@@ -79,10 +77,7 @@ const search: Search<Person> = {
 	name: { like: 'ali' },
 	age: { greater: 18 },
 	isActive: true, // shorthand for { equal: true }
-	createdAt: {
-		between: { start: new Date('2024-01-01'), end: new Date('2024-12-31') },
-	},
-
+	createdAt: {  greater: new Date('2024-01-01'), lesser: new Date('2024-12-31') },
 	// array of scalars -> filter by an element match
 	tags: { like: 'script' },
 	// or shorthand equal

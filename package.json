@@ -1,21 +1,33 @@
 {
-	"name": "@bitbeater/ssr",
-	"version": "1.0.0",
+	"name": "@alexrr2iggs/ssr",
+	"version": "2.0.0",
 	"description": "",
 	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
 	"files": [
 		"dist"
 	],
+	"exports": {
+		".": {
+			"default": "./dist/index.js"
+		}
+	},
+	"publishConfig": {
+		"registry": "https://registry.npmjs.org/",
+		"access": "public"
+	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/bitBeater/ssr.git"
 	},
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"test": "tsc && tsc --noEmit ./tests/valid_types.ts && node --test -r ./node_modules/ts-node/register/transpile-only.js ./tests/**/*"
 	},
 	"author": "",
 	"license": "ISC",
-	"dependencies": {
-		"type-fest": "^2.14.0"
+	"devDependencies": {
+		"@types/node": "^24.3.1",
+		"type-fest": "^2.14.0",
+		"ts-node": "^10.9.2"
 	}
 }

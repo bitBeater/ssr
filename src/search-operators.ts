@@ -1,14 +1,29 @@
-import { RequireExactlyOne } from 'type-fest';
 import { ScalarValue } from './misc';
-interface Operator<T> {
+
+export interface EqualOperator<T> {
 	equal: T | T[];
-	like: T;
-	greater: T;
-	lesser: T;
-	between: { start: T; end: T };
 }
 
-export type Find<Property> = { not?: boolean } & RequireExactlyOne<Operator<Property>>;
+
+export interface LikeOperator<T> {
+	like: T | T[];
+}
+
+
+// interface that replaces greater, lesser and between
+// it should have atleast one of the properties
+export type RangeOperator<T> = {
+	greater: T;
+	lesser: T;
+} | {
+	greater: T;
+} | {
+	lesser: T;
+}
+
+export type Operator<T> = EqualOperator<T> | LikeOperator<T> | RangeOperator<T>
+
+export type Find<Property> = { not?: boolean } & Operator<Property>;
 
 export type Where<FieldType> =
 	FieldType extends ScalarValue ?
@@ -29,48 +44,21 @@ export type Search<Entity> = {
 	[P in keyof Entity]?: Where<NonNullable<Entity[P]>>;
 };
 
+export function isOperator<T>(operator: unknown): operator is Operator<T> {
 
-type sub = {
-	a: number;
-	b: string;
+	return isEqualOperator<T>(operator as Operator<T>) ||
+		isLikeOperator<T>(operator as Operator<T>) ||
+		isRangeOperator<T>(operator as Operator<T>);
 }
 
-type TestType = {
-	id: number;
-	name: string;
-	age: number;
-	createdAt: Date;
-	updatedAt?: Date;
-	tags: string[];
-	related: sub[];
-	metadata: {
-		key: string;
-		value: string;
-		nested: {
-			field1: string;
-			field2: number;
-		}
-	} | null;
-	method: () => void;
+export function isEqualOperator<T>(operator: Operator<T>): operator is EqualOperator<T> {
+	return Object.keys(operator).includes('equal');
 }
 
-// const testOkSearch: Search<TestType> = {
-// 	id: 5,
-// 	name: { like: 'John' },
-// 	age: 18,
-// 	createdAt: { between: { start: new Date('2020-01-01'), end: new Date('2020-12-31') } },
-// 	updatedAt: { equal: null },
-// 	metadata: {
-// 		key: { equal: 'value1' },
-// 		nested: {
-// 			field1: { like: 'test' },
-// 			field2: { lesser: 100 },
-// 		}
-// 	},
-// 	tags: 'tag1',
-// 	related: {
-// 		a: { greater: 10 },
-// 		b: { like: 'related' }
-// 	}
-//     method: { equal: () => { } }, // Error
-// }
+export function isLikeOperator<T>(operator: Operator<T>): operator is LikeOperator<T> {
+	return Object.keys(operator).includes('like');
+}
+
+export function isRangeOperator<T>(operator: Operator<T>): operator is RangeOperator<T> {
+	return Object.keys(operator).includes('greater') || Object.keys(operator).includes('lesser');
+}
