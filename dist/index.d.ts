@@ -1,7 +1,8 @@
 export * from './fields';
 export * from './order';
-export * from './paginated-result';
-export * from './paginated-search';
-export * from './search-operators';
+export * from './paginated_result';
+export * from './paginated_search';
+export * from './search_operators';
 export * from './repository';
+export * from './query_builder/query_builder';
 //# sourceMappingURL=index.d.ts.map

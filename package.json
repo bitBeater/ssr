@@ -27,7 +27,10 @@
 	"license": "ISC",
 	"devDependencies": {
 		"@types/node": "^24.3.1",
-		"type-fest": "^2.14.0",
-		"ts-node": "^10.9.2"
+		"ts-node": "^10.9.2",
+		"type-fest": "^2.14.0"
+	},
+	"dependencies": {
+		"iggs-utils": "^2.4.0"
 	}
 }

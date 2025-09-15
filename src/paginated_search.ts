@@ -1,6 +1,6 @@
 import { Fields } from './fields';
 import { Order } from './order';
-import { Search } from './search-operators';
+import { Search } from './search_operators';
 
 /**
  * describes a paginated and ordered search.

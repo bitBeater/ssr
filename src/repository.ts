@@ -1,6 +1,6 @@
-import { PaginatedResult } from './paginated-result';
-import { PaginatedSearch } from './paginated-search';
-import { Search } from './search-operators';
+import { PaginatedResult } from './paginated_result';
+import { PaginatedSearch } from './paginated_search';
+import { Search } from './search_operators';
 
 
 

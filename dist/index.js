@@ -16,8 +16,9 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./fields"), exports);
 __exportStar(require("./order"), exports);
-__exportStar(require("./paginated-result"), exports);
-__exportStar(require("./paginated-search"), exports);
-__exportStar(require("./search-operators"), exports);
+__exportStar(require("./paginated_result"), exports);
+__exportStar(require("./paginated_search"), exports);
+__exportStar(require("./search_operators"), exports);
 __exportStar(require("./repository"), exports);
+__exportStar(require("./query_builder/query_builder"), exports);
 //# sourceMappingURL=index.js.map

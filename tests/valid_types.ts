@@ -1,50 +1,170 @@
 import { Fields, Order, Search } from '../src';
+import { Metadata } from '../src/metadata';
 
-type sub = {
-    a: number;
-    b: string;
-}
-
-type TestType = {
+export type Tag = {
     id: number;
     name: string;
+}
+export type BioMetrics = {
+    height: number;
+    hairColor: string;
+    eyeColor: string;
+    ethnicity: string;
+}
+
+export type Veichle = {
+    id: number;
+    type: 'car' | 'bike' | 'truck';
+    brand: string;
+    model: string;
+    year: number;
+    owner: Person;
+    tags: Tag[];
+}
+
+export type Person = {
+    id: number;
+    name: string;
+    birthDate: Date;
+    nickNames?: string[];
+    description?: string;
     age: number;
-    createdAt: Date;
-    updatedAt?: Date;
-    tags: string[];
-    related: sub[];
-    metadata: {
-        key: string;
-        value: string;
-        nested: {
-            field1: string;
-            field2: number;
-        }
-    } | null;
+    type: 'admin' | 'user' | 'guest';
+    isActive: boolean;
+
+    // self reference
+    father: Person;
+    mother: Person;
+
+    // outbound relation
+    bioMetrics: BioMetrics;
+
+    // inbound relations
+    veichles: Veichle[];
+
+    // bridge tables
+    tags: Tag[];
+
+    // this should be ignored
     method: () => void;
 }
+
+// ---------------------- METADATA --------------------
+
+
+export const tagMetadata: Metadata<Tag> = {
+    tableName: 'tags',
+    id: 'id',
+    name: 'name',
+}
+
+export const bioMetricsMetadata: Metadata<BioMetrics> = {
+    tableName: 'bio_metrics',
+    height: 'height',
+    hairColor: 'hair_color',
+    eyeColor: 'eye_color',
+    ethnicity: 'ethnicity'
+}
+
+export const veichleMetadata: Metadata<Veichle> = {
+    tableName: 'veichles',
+    id: 'id',
+    type: 'type',
+    brand: 'brand',
+    model: 'model',
+    year: 'year',
+    tags: {
+        bridgeTable: 'veichle_tags',
+        sourceRefKey: 'id',
+        targetRefKey: 'id',
+        bridgeSourceForeignKey: 'veichleId',
+        bridgeTargetForeignKey: 'tagId',
+        targetMetadata: tagMetadata
+    },
+}
+
+
+export const personMetadata: Metadata<Person> = {
+    tableName: 'person',
+    id: 'id',
+    name: 'name',
+    birthDate: 'birthDate',
+    description: 'description',
+    age: 'age',
+    type: 'type',
+    isActive: 'isActive',
+
+    // MANY TO MANY
+    tags: {
+        bridgeTable: 'person_tags',
+        sourceRefKey: 'id',
+        targetRefKey: 'id',
+        bridgeSourceForeignKey: 'person_id',
+        bridgeTargetForeignKey: 'tag_id',
+        targetMetadata: tagMetadata
+    },
+
+    // ONE TO ONE
+    bioMetrics: {
+        sourceForeignkey: 'bioMetricsId',
+        targetRefKey: 'id',
+        targetMetadata: bioMetricsMetadata
+    },
+
+    // ONE TO MANY
+    veichles: {
+        sourceRefKey: 'id',
+        targetForeignKey: 'ownerId',
+        targetMetadata: veichleMetadata
+    }
+}
+
+// MANY TO ONE
+veichleMetadata.owner = {
+    sourceForeignkey: 'ownerId',
+    targetRefKey: 'id',
+    targetMetadata: personMetadata
+}
+
+// MANY TO ONE SELF REFERENCE
+personMetadata.father = {
+    sourceForeignkey: 'fatherId',
+    targetRefKey: 'id',
+    targetMetadata: personMetadata
+}
+
+// MANY TO ONE SELF REFERENCE
+personMetadata.mother = {
+    sourceForeignkey: 'motherId',
+    targetRefKey: 'id',
+    targetMetadata: personMetadata
+}
+
+
 
 
 // ---------------------- SEARCH ----------------------
 
-const testOkSearch: Search<TestType> = {
+const testOkSearch: Search<Person> = {
+    $_not: true,
     id: 5,
-    name: { like: 'John' },
-    age: { greater: 18 },
-    createdAt: { greater: new Date('2020-01-01'), lesser: new Date('2020-12-31') },
-    updatedAt: { equal: null },
-    metadata: {
-        key: { equal: 'value1' },
-        nested: {
-            field1: { like: 'test' },
-            field2: { lesser: 100 },
-        }
+    name: { $_lk: 'John' },
+    age: { $_gt: 18 },
+    birthDate: { $_gt: new Date('2020-01-01'), $_lt: new Date('2020-12-31') },
+    isActive: { $_eq: true },
+    description: { $_not: true, $_eq: "avoid me" }, // description is string, so $_gt should be ignored
+    tags: { name: 'tag1' },
+    bioMetrics: {
+        height: { $_gt: 170 },
+        hairColor: 'brown',
     },
-    tags: 'tag1',
-    related: {
-        a: { lesser: 10 },
-        b: { like: 'related' }
-    }
+    veichles: {
+        type: 'car',
+        brand: 'Toyota',
+        year: { $_gt: 2015 },
+        tags: { name: { $_lk: 'suv' } },
+        id: { $_eq: 10, $_lt: 20 }
+    },
 }
 
 
@@ -52,65 +172,43 @@ const testOkSearch: Search<TestType> = {
 
 // ---------------------- FIELDS ----------------------
 
-const testOkFields: Fields<TestType> = {
+const testOkFields: Fields<Person> = {
     id: true,
     name: true,
     age: true,
-    createdAt: true,
-    updatedAt: true,
-    metadata: {
-        key: true,
-        value: true,
-        nested: {
-            field1: true,
-            field2: true,
+    birthDate: true,
+    tags: {
+        id: true,
+        name: true,
+    },
+    bioMetrics: {
+        height: true,
+        hairColor: true,
+        eyeColor: true,
+    },
+    veichles: {
+        id: true,
+        type: true,
+        brand: true,
+        model: true,
+        year: true,
+        tags: {
+            id: true,
+            name: true,
         }
-    },
-    tags: true, // Array field can be an object or true
-    related: {
-        a: true,
-        b: true,
-    },
+    }
 }
 
-const testOkFields2: Fields<TestType> = {
+const testOkFields2: Fields<Person> = {
     id: true,
     name: true,
     age: true,
-    createdAt: true,
-    updatedAt: true,
-    metadata: true, // object field can be true
+    birthDate: true,
     tags: true, // string Array field can be true
-    related: true, // Array field can be an object or true
-
+    bioMetrics: true, // object field can be true
+    veichles: true, // Array field can be true
 }
 
-
-
-// const testNotOkFields: Fields<TestType> = {
-// 	id: false, // Error
-// 	name: 123, // Error
-// 	age: "string", // Error
-// 	createdAt: null, // Error
-// 	updatedAt: undefined, // Error
-// 	metadata: {
-// 		key: 123, // Error
-// 		value: false, // Error
-// 		nested: {
-// 			field1: null, // Error
-// 			field2: "string", // Error
-// 		}
-// 	},
-// 	tags: {
-// 		0: true, // Error
-// 	}, // Array field can be an object or true
-// 	related: {
-// 		a: "string", // Error
-// 		b: 123, // Error
-// 		c: true, // Error
-// 	},
-// 	method: true, // Error
-// }
 
 
 
@@ -118,48 +216,34 @@ const testOkFields2: Fields<TestType> = {
 // ---------------------- ORDER ----------------------
 
 
-const testOkOrder: Order<TestType> = {
+const testOkOrder: Order<Person> = {
     id: { direction: 'ASC', priority: 1 },
     name: { direction: 'ASC', priority: 1 },
     age: { direction: 'ASC', priority: 1 },
-    createdAt: { direction: 'ASC', priority: 1 },
-    updatedAt: { direction: 'ASC', priority: 1 },
-    metadata: {
-        key: { direction: 'ASC', priority: 1 },
-        value: { direction: 'ASC', priority: 1 },
-        nested: {
-            field1: { direction: 'ASC', priority: 1 },
-            field2: { direction: 'ASC', priority: 1 },
+    birthDate: { direction: 'ASC', priority: 1 },
+
+
+    bioMetrics: {
+        height: { direction: 'ASC', priority: 1 },
+        hairColor: { direction: 'ASC', priority: 1 },
+        eyeColor: { direction: 'ASC', priority: 1 },
+    },
+
+    veichles: {
+        id: { direction: 'ASC', priority: 1 },
+        type: { direction: 'ASC', priority: 1 },
+        brand: { direction: 'ASC', priority: 1 },
+        model: { direction: 'ASC', priority: 1 },
+        year: { direction: 'ASC', priority: 1 },
+        tags: {
+            id: { direction: 'ASC', priority: 1 },
+            name: { direction: 'ASC', priority: 1 },
         }
     },
-    tags: { direction: 'ASC', priority: 1, nulls: 'LAST' }, // Array field can be an object or true
-    related: {
-        a: { direction: 'ASC', priority: 1 },
-        b: { direction: 'ASC', priority: 1 },
-    },
+
+    tags: {
+        id: { direction: 'ASC', priority: 1 },
+        name: { direction: 'ASC', priority: 1 },
+    } // object Array field can be an object    
 }
 
-// const testNotOkFields: Fields<TestType> = {
-// 	id: false, // Error
-// 	name: 123, // Error
-// 	age: "string", // Error
-// 	createdAt: null, // Error
-// 	updatedAt: undefined, // Error
-// 	metadata: {
-// 		key: 123, // Error
-// 		value: false, // Error
-// 		nested: {
-// 			field1: null, // Error
-// 			field2: "string", // Error
-// 		}
-// 	},
-// 	tags: {
-// 		0: true, // Error
-// 	}, // Array field can be an object or true
-// 	related: {
-// 		a: "string", // Error
-// 		b: 123, // Error
-// 		c: true, // Error
-// 	},
-// 	method: true, // Error
-// }
