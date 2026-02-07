@@ -1,5 +1,5 @@
 import { describe, it } from "node:test";
-import { EqualCondition, RangeCondition, isRangeCondition, LikeCondition, isLikeCondition, Condition } from '@alexrr2iggs/ssr';
+import { EqualCondition, RangeCondition, isRangeCondition, LikeCondition, isLikeCondition, Condition } from '@bitbeater/ssr';
 import assert from "node:assert";
 
 

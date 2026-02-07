@@ -196,6 +196,64 @@ This library exports TypeScript types with no runtime. Use them to type your que
 - Repository<T>: save, search, remove function types
 
 
-## License
+## Query Builder
+A simple SQLite query builder implementation is included to demonstrate how to use the types in practice. It supports basic filtering, field selection, ordering, and pagination.
 
+```ts
+import { buildQueryString } from '@bitbeater/ssr/query_builder/sqlite3_query_builder';
+import { Condition, OrderDirection } from '@bitbeater/ssr';
+import { Metadata, QueryParam } from '@bitbeater/ssr/metadata';
+
+
+type Tag = { 
+	id: number;
+ 	name: string 
+};
+
+type Bio = { 
+	height: number; 
+	eyeColor: string;
+};
+
+type Address = {
+	city: string;
+	zip: number;
+};
+
+type Person = {
+	id: number;
+	name: string;
+	bio: Bio;
+	address: Address;
+	tags: Tag[];
+	children: Person[];
+	parent: Person;
+};
+
+
+/*
+	sql schema:
+	CREATE TABLE person (
+		id INTEGER PRIMARY KEY,
+		name TEXT,
+		parentId INTEGER,
+		addressId INTEGER,
+		FOREIGN KEY(parentId) REFERENCES person(id)
+		FOREIGN KEY(addressId) REFERENCES address(id),
+	);
+
+	CREATE TABLE bio (
+		id INTEGER PRIMARY KEY,
+		personId INTEGER,
+		height INTEGER,
+		eyeColor TEXT,
+		FOREIGN KEY(personId) REFERENCES person(id)
+	);
+
+*/
+
+```	
+
+
+## License
 ISC

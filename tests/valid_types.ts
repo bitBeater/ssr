@@ -1,4 +1,4 @@
-import { Fields, Order, Search } from '../src';
+import { Fields, Order, OrderDirection, Search } from '../src';
 import { Metadata } from '../src/metadata';
 
 export type Tag = {
@@ -9,7 +9,6 @@ export type BioMetrics = {
     height: number;
     hairColor: string;
     eyeColor: string;
-    ethnicity: string;
 }
 
 export type Veichle = {
@@ -63,7 +62,6 @@ export const bioMetricsMetadata: Metadata<BioMetrics> = {
     height: 'height',
     hairColor: 'hair_color',
     eyeColor: 'eye_color',
-    ethnicity: 'ethnicity'
 }
 
 export const veichleMetadata: Metadata<Veichle> = {
@@ -140,9 +138,6 @@ personMetadata.mother = {
     targetMetadata: personMetadata
 }
 
-
-
-
 // ---------------------- SEARCH ----------------------
 
 const testOkSearch: Search<Person> = {
@@ -163,7 +158,7 @@ const testOkSearch: Search<Person> = {
         brand: 'Toyota',
         year: { $_gt: 2015 },
         tags: { name: { $_lk: 'suv' } },
-        id: { $_eq: 10, $_lt: 20 }
+        id: { $_eq: 10 }
     },
 }
 
@@ -217,33 +212,33 @@ const testOkFields2: Fields<Person> = {
 
 
 const testOkOrder: Order<Person> = {
-    id: { direction: 'ASC', priority: 1 },
-    name: { direction: 'ASC', priority: 1 },
-    age: { direction: 'ASC', priority: 1 },
-    birthDate: { direction: 'ASC', priority: 1 },
+    id: { direction: OrderDirection.ASC, priority: 1 },
+    name: { direction: OrderDirection.ASC, priority: 1 },
+    age: { direction: OrderDirection.ASC, priority: 1 },
+    birthDate: { direction: OrderDirection.ASC, priority: 1 },
 
 
     bioMetrics: {
-        height: { direction: 'ASC', priority: 1 },
-        hairColor: { direction: 'ASC', priority: 1 },
-        eyeColor: { direction: 'ASC', priority: 1 },
+        height: { direction: OrderDirection.ASC, priority: 1 },
+        hairColor: { direction: OrderDirection.ASC, priority: 1 },
+        eyeColor: { direction: OrderDirection.ASC, priority: 1 },
     },
 
     veichles: {
-        id: { direction: 'ASC', priority: 1 },
-        type: { direction: 'ASC', priority: 1 },
-        brand: { direction: 'ASC', priority: 1 },
-        model: { direction: 'ASC', priority: 1 },
-        year: { direction: 'ASC', priority: 1 },
+        id: { direction: OrderDirection.ASC, priority: 1 },
+        type: { direction: OrderDirection.ASC, priority: 1 },
+        brand: { direction: OrderDirection.ASC, priority: 1 },
+        model: { direction: OrderDirection.ASC, priority: 1 },
+        year: { direction: OrderDirection.ASC, priority: 1 },
         tags: {
-            id: { direction: 'ASC', priority: 1 },
-            name: { direction: 'ASC', priority: 1 },
+            id: { direction: OrderDirection.ASC, priority: 1 },
+            name: { direction: OrderDirection.ASC, priority: 1 },
         }
     },
 
     tags: {
-        id: { direction: 'ASC', priority: 1 },
-        name: { direction: 'ASC', priority: 1 },
+        id: { direction: OrderDirection.ASC, priority: 1 },
+        name: { direction: OrderDirection.ASC, priority: 1 },
     } // object Array field can be an object    
 }
 

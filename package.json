@@ -1,15 +1,22 @@
 {
-	"name": "@alexrr2iggs/ssr",
+	"name": "@bitbeater/ssr",
 	"version": "2.0.0",
 	"description": "",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
+	"sideEffects": false,
 	"files": [
 		"dist"
 	],
+	"engines": {
+		"node": "20.x || 22.x || 23.x || 24.x"
+	},
 	"exports": {
 		".": {
 			"default": "./dist/index.js"
+		},
+		"./query_builder/sqlite3": {
+			"default": "./dist/query_builder/sqlite3_query_builder.js"
 		}
 	},
 	"publishConfig": {
@@ -21,12 +28,14 @@
 		"url": "git+https://github.com/bitBeater/ssr.git"
 	},
 	"scripts": {
-		"test": "tsc && tsc --noEmit ./tests/valid_types.ts && node --test -r ./node_modules/ts-node/register/transpile-only.js ./tests/**/*"
+		"test": "tsc && tsc --noEmit ./tests/valid_types.ts && node --test -r ./node_modules/ts-node/register/transpile-only.js ./tests/**/*.test.ts"
 	},
 	"author": "",
 	"license": "ISC",
 	"devDependencies": {
+		"@types/better-sqlite3": "^7.6.13",
 		"@types/node": "^24.3.1",
+		"better-sqlite3": "^12.2.0",
 		"ts-node": "^10.9.2",
 		"type-fest": "^2.14.0"
 	},

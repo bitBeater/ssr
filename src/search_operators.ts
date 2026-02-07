@@ -46,7 +46,7 @@ const op1: Operator<number> = { $_gt: 10, $_lt: 20 }; // should be invalid
 
 export type Where<FieldType> =
 	FieldType extends ScalarValue ?
-	Operator<FieldType> | FieldType
+	Operator<FieldType> | FieldType | FieldType[]
 	:
 	FieldType extends Function ?
 	never

@@ -1,5 +1,8 @@
 import { ScalarValue } from './misc';
-export type OrderDirection = 'ASC' | 'DESC';
+export declare enum OrderDirection {
+    ASC = "ASC",
+    DESC = "DESC"
+}
 export type OrderStrategy = {
     direction: OrderDirection;
     nulls?: 'FIRST' | 'LAST';
@@ -9,4 +12,5 @@ export type OrderField<FieldType> = FieldType extends ScalarValue ? OrderStrateg
 export type Order<T> = {
     [P in keyof T]?: OrderField<NonNullable<T[P]>>;
 };
+export declare function isOrderStrategy(obj: unknown): obj is OrderStrategy;
 //# sourceMappingURL=order.d.ts.map

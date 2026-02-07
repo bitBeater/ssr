@@ -1,6 +1,11 @@
 import { ScalarValue } from './misc';
 
-export type OrderDirection = 'ASC' | 'DESC';
+
+export enum OrderDirection {
+	ASC = 'ASC',
+	DESC = 'DESC'
+}
+
 export type OrderStrategy = {
 	direction: OrderDirection;
 	nulls?: 'FIRST' | 'LAST';
@@ -28,3 +33,7 @@ export type OrderField<FieldType> =
 export type Order<T> = {
 	[P in keyof T]?: OrderField<NonNullable<T[P]>>;
 };
+
+export function isOrderStrategy(obj: unknown): obj is OrderStrategy {
+	return [OrderDirection.ASC, OrderDirection.DESC].includes((obj as OrderStrategy)?.direction);
+}

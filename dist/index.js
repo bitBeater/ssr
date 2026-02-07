@@ -20,5 +20,5 @@ __exportStar(require("./paginated_result"), exports);
 __exportStar(require("./paginated_search"), exports);
 __exportStar(require("./search_operators"), exports);
 __exportStar(require("./repository"), exports);
-__exportStar(require("./query_builder/query_builder"), exports);
+__exportStar(require("./metadata"), exports);
 //# sourceMappingURL=index.js.map
