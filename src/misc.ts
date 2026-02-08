@@ -1,5 +1,6 @@
 import { Metadata } from './metadata';
 export type ScalarValue = string | number | boolean | Date | Promise<any>;
+export type SqliteValue = string | number | null;
 import { keysOf } from "@bitbeater/ecma-utils/object";
 
 
@@ -12,6 +13,7 @@ export function isScalarValue(value: unknown): value is ScalarValue {
 export function getValueByFieldName<T>(obj: T, fieldName: string, metadata: Metadata<T>): any {
     const key = getObjectKyeByFieldName(fieldName, metadata);
     if (!key) throw new Error(`Field name ${fieldName} not found in metadata`);
+
     return obj[key];
 }
 

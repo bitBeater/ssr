@@ -1,6 +1,6 @@
 import { Fields as SelectedFields } from "../fields";
 import { BridgeLink, IncomingLink, isBridgeLink, isIncomingLink, isOutcomeingLink, isRelation, Metadata, OutcomeingLink } from "../metadata";
-import { isScalarValue, ScalarValue } from "../misc";
+import { getValueByFieldName, isScalarValue, ScalarValue } from "../misc";
 import { PaginatedSearch } from "../paginated_search";
 import { Condition, EqualCondition, isEqualCondition, isLikeCondition, isRangeCondition, LikeCondition, RangeCondition, Search } from "../search_operators";
 // import { keysOf } from "iggs-utils/object";
@@ -350,7 +350,9 @@ export function buildInsertQueryString<T>(data: T[], metadata: Metadata<T>): [st
 
         for (const field of fields) {
             itemPlaceholders.push('?');
-            values.push(scalarValueToSql(item[field]));
+            const objValue = getValueByFieldName(item, field, metadata);
+            const sqlValue = scalarValueToSql(objValue);
+            values.push(sqlValue);
         }
 
         valuePlaceholders.push(`(${itemPlaceholders.join(', ')})`);
