@@ -200,58 +200,173 @@ This library exports TypeScript types with no runtime. Use them to type your que
 A simple SQLite query builder implementation is included to demonstrate how to use the types in practice. It supports basic filtering, field selection, ordering, and pagination.
 
 ```ts
-import { buildQueryString } from '@bitbeater/ssr/query_builder/sqlite3_query_builder';
+import { buildQueryString } from '@bitbeater/ssr/query_builder/sqlite3';
 import { Condition, OrderDirection } from '@bitbeater/ssr';
-import { Metadata, QueryParam } from '@bitbeater/ssr/metadata';
+import { Metadata } from '@bitbeater/ssr';
+import Database from 'better-sqlite3';
 
+const db = new Database(':memory:');
 
-type Tag = { 
-	id: number;
- 	name: string 
+const sql_schema = `
+    CREATE TABLE person (
+        id INTEGER PRIMARY KEY,
+        name TEXT,
+        parentId INTEGER,
+        addressId INTEGER,
+        FOREIGN KEY(parentId) REFERENCES person(id),
+        FOREIGN KEY(addressId) REFERENCES address(id)
+    );
+
+    CREATE TABLE bio (
+        id INTEGER PRIMARY KEY,
+        personId INTEGER UNIQUE,
+        height INTEGER,
+        eyeColor TEXT,
+        FOREIGN KEY(personId) REFERENCES person(id)
+    );
+
+    CREATE TABLE address (
+        id INTEGER PRIMARY KEY,
+        city TEXT,
+        zip INTEGER
+    );
+
+    CREATE TABLE tag (
+        id INTEGER PRIMARY KEY,
+        name TEXT
+    );
+
+    CREATE TABLE person_tags (
+        personId INTEGER,
+        tagId INTEGER,
+        FOREIGN KEY(personId) REFERENCES person(id),
+        FOREIGN KEY(tagId) REFERENCES tag(id)
+    );`
+
+db.exec(sql_schema);
+
+type Tag = {
+    id: number;
+    name: string
 };
 
-type Bio = { 
-	height: number; 
-	eyeColor: string;
+type Bio = {
+    height: number;
+    eyeColor: string;
 };
 
 type Address = {
-	city: string;
-	zip: number;
+    city: string;
+    zip: number;
 };
 
 type Person = {
-	id: number;
-	name: string;
-	bio: Bio;
-	address: Address;
-	tags: Tag[];
-	children: Person[];
-	parent: Person;
+    id: number;
+    name: string;
+    bio: Bio;
+    address: Address;
+    tags: Tag[];
+    children: Person[];
+    parent: Person;
 };
 
 
-/*
-	sql schema:
-	CREATE TABLE person (
-		id INTEGER PRIMARY KEY,
-		name TEXT,
-		parentId INTEGER,
-		addressId INTEGER,
-		FOREIGN KEY(parentId) REFERENCES person(id)
-		FOREIGN KEY(addressId) REFERENCES address(id),
-	);
 
-	CREATE TABLE bio (
-		id INTEGER PRIMARY KEY,
-		personId INTEGER,
-		height INTEGER,
-		eyeColor TEXT,
-		FOREIGN KEY(personId) REFERENCES person(id)
-	);
+const tagMetadata: Metadata<Tag> = {
+    tableName: 'tag',
+    id: 'id',
+    name: 'name',
+}
 
-*/
+const bioMetadata: Metadata<Bio> = {
+    tableName: 'bio',
+    height: 'height',
+    eyeColor: 'eyeColor',
+}
 
+const addressMetadata: Metadata<Address> = {
+    tableName: 'address',
+    city: 'city',
+    zip: 'zip',
+}
+
+const personMetadata: Metadata<Person> = {
+    tableName: 'person',
+    id: 'id',
+    name: 'name',
+    bio: {
+        targetRefKey: 'id',
+        sourceForeignkey: 'personId',
+        targetMetadata: bioMetadata
+    },
+    address: {
+        sourceForeignkey: 'addressId',
+        targetRefKey: 'id',
+        targetMetadata: addressMetadata
+    },
+    tags: {
+        bridgeTable: 'person_tags',
+        sourceRefKey: 'id',
+        targetRefKey: 'id',
+        bridgeSourceForeignKey: 'personId',
+        bridgeTargetForeignKey: 'tagId',
+        targetMetadata: tagMetadata
+    }
+}
+
+personMetadata.children = {
+    sourceRefKey: 'id',
+    targetForeignKey: 'parentId',
+    targetMetadata: personMetadata
+};
+
+personMetadata.parent = {
+    sourceForeignkey: 'parentId',
+    targetRefKey: 'id',
+    targetMetadata: personMetadata
+};
+
+
+// Example usage of buildQueryString
+// equality condition
+
+const [equalityQuery, queryParams] = buildQueryString<Person>({ search: { name: 'John' } }, personMetadata);
+// equalityQuery: "SELECT person.* FROM person WHERE person.name = ?"
+// queryParams: ['John']
+console.log(equalityQuery, queryParams);
+
+// range condition
+const [rangeQuery, rangeParams] = buildQueryString<Person>({ search: { id: { $_gt: 5, $_lt: 10 } } }, personMetadata);
+// rangeQuery: "SELECT person.* FROM person WHERE person.id > ? AND person.id < ?"
+// rangeParams: [5, 10]
+
+console.log(rangeQuery, rangeParams);
+
+// like condition
+const [likeQuery, likeParams] = buildQueryString<Person>({ search: { name: { [Condition.LIKE]: 'Jo%' } } }, personMetadata);
+// likeQuery: "SELECT person.* FROM person WHERE person.name LIKE ?"
+// likeParams: ['Jo%']
+console.log(likeQuery, likeParams);
+
+// combined conditions with ordering and pagination
+const [complexQuery, complexParams] = buildQueryString<Person>({
+    search: {
+        name: { [Condition.LIKE]: 'Jo%' },
+        id: { [Condition.GREATER]: 5 }
+    },
+    order: { name: { direction: OrderDirection.ASC } },
+    page: 0,
+    pageSize: 10
+}, personMetadata);
+// complexQuery: "SELECT person.* FROM person WHERE person.name LIKE ? AND person.id > ? ORDER BY person.name ASC LIMIT ? OFFSET ?"
+// complexParams: ['Jo%', 5, 10, 0]
+
+console.log(complexQuery, complexParams);
+
+let res = db.prepare(equalityQuery).run(queryParams);
+res = db.prepare(rangeQuery).run(rangeParams);
+res = db.prepare(likeQuery).run(likeParams);
+res = db.prepare(complexQuery).run(complexParams);
 ```	
 
 

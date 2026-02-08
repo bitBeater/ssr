@@ -3,9 +3,9 @@ import assert from 'node:assert';
 
 import Database from 'better-sqlite3';
 
-import { Person, personMetadata } from './valid_types';
+import { Person, personMetadata } from '../valid_types';
 import { Condition, Search, Metadata, Field, Order, OrderDirection } from '@bitbeater/ssr';
-import { buildQueryString, buildWhereQueryString, makeOrderByClause } from '@bitbeater/ssr/query_builder/sqlite3';
+import { buildQueryString, buildWhereQueryString, makeOrderByClause } from '../../dist/query_builder/sqlite3_query_builder';
 
 
 
@@ -22,7 +22,7 @@ describe('sqlite3 query builder', () => {
 
             const [queryString, values] = buildWhereQueryString(searchOperators, personMetadata);
             const expectedQueryString = `WHERE person.name LIKE ? AND person.age > ? AND person.age < ? AND person.isActive = ? AND NOT person.description = ?`;
-            const expectedValues = ['ohn', 18, 30, true, 'avoid me'];
+            const expectedValues = ['ohn', 18, 30, 'TRUE', 'avoid me'];
 
             assert.equal(queryString, expectedQueryString);
             assert.deepEqual(values, expectedValues);

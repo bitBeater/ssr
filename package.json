@@ -1,6 +1,6 @@
 {
 	"name": "@bitbeater/ssr",
-	"version": "2.0.0",
+	"version": "2.1.0",
 	"description": "",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
@@ -8,9 +8,6 @@
 	"files": [
 		"dist"
 	],
-	"engines": {
-		"node": "20.x || 22.x || 23.x || 24.x"
-	},
 	"exports": {
 		".": {
 			"default": "./dist/index.js"
@@ -35,11 +32,12 @@
 	"devDependencies": {
 		"@types/better-sqlite3": "^7.6.13",
 		"@types/node": "^24.3.1",
-		"better-sqlite3": "^12.2.0",
+		"better-sqlite3": "^12.6.2",
 		"ts-node": "^10.9.2",
+		"tsx": "^4.21.0",
 		"type-fest": "^2.14.0"
 	},
 	"dependencies": {
-		"iggs-utils": "^2.4.0"
+		"@bitbeater/ecma-utils": "^2.9.0"
 	}
 }

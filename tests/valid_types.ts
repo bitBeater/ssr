@@ -22,30 +22,30 @@ export type Veichle = {
 }
 
 export type Person = {
-    id: number;
-    name: string;
-    birthDate: Date;
+    id?: number;
+    name?: string;
+    birthDate?: Date;
     nickNames?: string[];
     description?: string;
-    age: number;
-    type: 'admin' | 'user' | 'guest';
-    isActive: boolean;
+    age?: number;
+    type?: 'admin' | 'user' | 'guest';
+    isActive?: boolean;
 
     // self reference
-    father: Person;
-    mother: Person;
+    father?: Person;
+    mother?: Person;
 
     // outbound relation
-    bioMetrics: BioMetrics;
+    bioMetrics?: BioMetrics;
 
     // inbound relations
-    veichles: Veichle[];
+    veichles?: Veichle[];
 
     // bridge tables
-    tags: Tag[];
+    tags?: Tag[];
 
     // this should be ignored
-    method: () => void;
+    method?: () => void;
 }
 
 // ---------------------- METADATA --------------------

@@ -1,4 +1,4 @@
-import { isScalarValue, ScalarValue } from './misc';
+import { ScalarValue } from './misc';
 
 
 export enum Condition {

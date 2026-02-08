@@ -3,7 +3,8 @@ import { BridgeLink, IncomingLink, isBridgeLink, isIncomingLink, isOutcomeingLin
 import { isScalarValue, ScalarValue } from "../misc";
 import { PaginatedSearch } from "../paginated_search";
 import { Condition, EqualCondition, isEqualCondition, isLikeCondition, isRangeCondition, LikeCondition, RangeCondition, Search } from "../search_operators";
-import { keysOf } from "iggs-utils/object";
+// import { keysOf } from "iggs-utils/object";
+import { keysOf } from "@bitbeater/ecma-utils/object";
 import { isOrderStrategy, Order, OrderDirection, OrderStrategy } from "../order";
 
 type QueryParam = boolean | number | string;
@@ -243,9 +244,14 @@ function makeRangeCondition<T>(field: keyof T, rangeCondition: RangeCondition<Sc
 
 function scalarValueToSql(value: ScalarValue): QueryParam {
     if (value instanceof Date) {
-        return `'${value.toISOString().slice(0, 19).replace('T', ' ')}'`; // format as 'YYYY-MM-DD HH:MM:SS'
+        return `${value.toISOString().slice(0, 19).replace('T', ' ')}`; // format as 'YYYY-MM-DD HH:MM:SS'
     } if (value instanceof Promise) {
         throw new Error('Promise is not a valid ScalarValue');
+    } if (value === undefined) {
+        return null;
+    }
+    if (typeof value === 'boolean') {
+        return value ? 'TRUE' : 'FALSE';
     }
 
     return value;
@@ -319,4 +325,60 @@ function buildOutcomeingLinkQueryString<T>(search: Search<T>, sourceTable: strin
     const queryString = `${sourceFK} IN (${selectTargetRefsQuery})`;
 
     return [queryString, values];
+}
+
+
+/**
+ * Builds an INSERT SQL query string and its parameters from an array of data objects and metadata.
+ * 
+ * ---
+ * Limitations:
+ * - Only handles scalar values (string, number, boolean, Date) in the data objects. 
+ * - Relations and complex types are not supported.
+ * - Does not handle auto-incrementing primary keys or default values.
+ * @param data
+ * @param metadata
+ * @returns 
+ */
+export function buildInsertQueryString<T>(data: T[], metadata: Metadata<T>): [string, QueryParam[]] {
+    const fields: string[] = getTableFields(metadata);
+    const valuePlaceholders: string[] = [];
+    const values: QueryParam[] = [];
+
+    for (const item of data) {
+        const itemPlaceholders: string[] = [];
+
+        for (const field of fields) {
+            itemPlaceholders.push('?');
+            values.push(scalarValueToSql(item[field]));
+        }
+
+        valuePlaceholders.push(`(${itemPlaceholders.join(', ')})`);
+    }
+
+    const query = `INSERT INTO ${metadata.tableName} (${fields.join(', ')}) VALUES ${valuePlaceholders.join(', ')}`;
+
+    return [query, values];
+}
+
+/**
+ * Returns the list of table fields defined in the metadata, excluding relations and complex types.
+ * @param metadata 
+ * @returns 
+ */
+function getTableFields<T>(metadata: Metadata<T>): string[] {
+    const fields: string[] = [];
+
+    for (const key of keysOf(metadata)) {
+
+        if (key === 'tableName') continue;
+
+        const metadataFieldValue = metadata[key];
+
+        if (typeof metadataFieldValue === 'string') {
+            fields.push(metadataFieldValue);
+        }
+    }
+
+    return fields;
 }
