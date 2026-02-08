@@ -26,7 +26,7 @@ export type FieldMetadata<FieldType> =
 	BridgeLink<ArrayType> | IncomingLink<ArrayType>
 	:
 	FieldType extends object ?
-	BridgeLink<FieldType> | OutcomeingLink<FieldType>
+	OutcomeingLink<FieldType>
 	:
 	never
 
